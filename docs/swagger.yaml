@@ -1,0 +1,644 @@
+basePath: /api/v1
+definitions:
+  handler.confirmClientInput:
+    properties:
+      numberQueue:
+        type: string
+    required:
+    - numberQueue
+    type: object
+  handler.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.getWorkstationListsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.Workstation'
+        type: array
+    type: object
+  handler.logoutInput:
+    properties:
+      employeeId:
+        type: string
+    required:
+    - employeeId
+    type: object
+  handler.refreshTokenInput:
+    properties:
+      employeeId:
+        type: string
+      refreshToken:
+        type: string
+      workstationId:
+        type: string
+    required:
+    - employeeId
+    - refreshToken
+    - workstationId
+    type: object
+  handler.signInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  types.AuthorizationResponse:
+    properties:
+      accessToken:
+        type: string
+      employee:
+        $ref: '#/definitions/types.Employee'
+      refreshToken:
+        type: string
+      workstation:
+        $ref: '#/definitions/types.Workstation'
+    required:
+    - accessToken
+    - employee
+    - refreshToken
+    - workstation
+    type: object
+  types.ConfirmClientResponse:
+    properties:
+      number_queue:
+        type: integer
+    type: object
+  types.Employee:
+    properties:
+      employee_id:
+        type: integer
+      expires_at:
+        type: integer
+      first_name:
+        type: string
+      password:
+        type: string
+      position:
+        type: integer
+      refresh_token:
+        type: string
+      second_name:
+        type: string
+      session_state:
+        type: boolean
+      status:
+        type: integer
+      username:
+        type: string
+      workstation_id:
+        type: integer
+    type: object
+  types.EmployeeStatusResponse:
+    properties:
+      employee_status:
+        type: integer
+    type: object
+  types.GetEmployeeListsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.Employee'
+        type: array
+    type: object
+  types.GetNewClientResponse:
+    properties:
+      employee_status:
+        type: integer
+      number_queue:
+        type: integer
+      number_ticket:
+        type: integer
+      service_ticket:
+        type: string
+    type: object
+  types.LogoutResponse:
+    properties:
+      status_response:
+        type: boolean
+    required:
+    - status_response
+    type: object
+  types.QueueItem:
+    properties:
+      Id:
+        type: integer
+      Service:
+        type: string
+      Status:
+        type: integer
+      Time:
+        type: string
+      Workstation:
+        type: integer
+    type: object
+  types.QueueItemNumber:
+    properties:
+      TicketID:
+        type: integer
+    type: object
+  types.Responsibility:
+    properties:
+      responsibility_id:
+        type: integer
+      responsibility_name:
+        type: string
+    type: object
+  types.SignUpResponse:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
+  types.Workstation:
+    properties:
+      employee_id:
+        type: integer
+      workstation_id:
+        type: integer
+      workstation_name:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: alievtm@gmail.com
+    name: Timur Aliev
+    url: https://t.me/Aliev_Timur_M
+  description: API Server for digital queue
+  title: Digital Queue API
+  version: "1.0"
+paths:
+  /api/employee:
+    get:
+      consumes:
+      - application/json
+      description: get list employee
+      operationId: get-employee-lists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.GetEmployeeListsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Employee Lists
+      tags:
+      - employee
+  /api/queue:
+    get:
+      consumes:
+      - application/json
+      description: get all queue list
+      operationId: get-queue-list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.QueueItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get Queue List
+      tags:
+      - queue
+  /api/queue/service:
+    get:
+      consumes:
+      - application/json
+      description: add new ticket (item queue) in the end of the queue
+      operationId: add-new-ticket
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.QueueItemNumber'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Add New Queue Item
+      tags:
+      - queue
+  /api/responsibility:
+    get:
+      consumes:
+      - application/json
+      description: get responsibility list
+      operationId: get-responsibility-lists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Responsibility'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get Responsibility List
+      tags:
+      - responsibility
+  /api/workstation:
+    post:
+      consumes:
+      - application/json
+      description: get workstation data
+      operationId: get-workstation
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response
+          schema:
+            $ref: '#/definitions/handler.getWorkstationListsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get Workstation Data
+      tags:
+      - workstation
+  /auth/employee/client:
+    post:
+      consumes:
+      - application/json
+      description: get an available client from the queue
+      operationId: get-new-client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.GetNewClientResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get New Client
+      tags:
+      - client
+  /auth/employee/confirmClient:
+    post:
+      consumes:
+      - application/json
+      description: confirms that the client has approached the workstation
+      operationId: confirm-client
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.confirmClientInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ConfirmClientResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Confirm Client
+      tags:
+      - client
+  /auth/employee/endClient:
+    post:
+      consumes:
+      - application/json
+      description: complete the client
+      operationId: end-client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ConfirmClientResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: End Client
+      tags:
+      - client
+  /auth/employee/getStatus:
+    post:
+      consumes:
+      - application/json
+      description: get the current status of an employee
+      operationId: get-status-employee
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.EmployeeStatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Employee Status
+      tags:
+      - employee
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: logout account
+      operationId: logout
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.logoutInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response
+          schema:
+            $ref: '#/definitions/types.LogoutResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Logout
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: refresh AccessToken, RefreshToken, Employee, Workstation data
+      operationId: refresh
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.refreshTokenInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response
+          schema:
+            $ref: '#/definitions/types.AuthorizationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Refresh
+      tags:
+      - auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: employee authorization
+      operationId: sign-in
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: response
+          schema:
+            $ref: '#/definitions/types.AuthorizationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Sign In
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: registration new account
+      operationId: registration-account
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/types.Employee'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Employee ID
+          schema:
+            $ref: '#/definitions/types.SignUpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Sign Up
+      tags:
+      - auth
+swagger: "2.0"

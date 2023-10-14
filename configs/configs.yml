@@ -1,0 +1,17 @@
+port: "8080"
+
+db:
+  username: timur_admin
+  host: "localhost"
+  port: "5432"
+  dbname: "digitalqueue"
+  sslmode: "disable"
+
+token:
+  accessTokenTTL: 2592000 # 900s = 15m
+  refreshTokenTTL: 2592000 # 2592000s = 30 days
+
+email:
+  host: "smtp.mail.ru"
+  port: "465"
+  from: "alievtm@digitalqueue.ru"
